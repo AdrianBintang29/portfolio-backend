@@ -22,6 +22,11 @@ func main() {
 	app.Put("/projects/:id", UpdateProject)
 	app.Delete("/projects/:id", DeleteProject)
 
+	app.Get("/education", GetEducation)
+	app.Post("/education", CreateEducation)
+	app.Put("/education/:id", UpdateEducation)
+	app.Delete("/education/:id", DeleteEducation)
+
 	fmt.Println("Server jalan di http://localhost:8080")
 	app.Listen(":8080")
 }
