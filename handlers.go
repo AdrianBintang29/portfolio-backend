@@ -1,9 +1,7 @@
 package main
 
 import (
-	"net/http"
-
-	"github.com/gin-gonic/gin"
+	"github.com/gofiber/fiber/v2"
 )
 
 type Project struct {
@@ -13,11 +11,10 @@ type Project struct {
 	Link        string `json:"link"`
 }
 
-func GetProjects(c *gin.Context) {
+func GetProjects(c *fiber.Ctx) error {
 	rows, err := DB.Query("SELECT id, title, description, link FROM projects ORDER BY id")
 	if err != nil {
-		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
-		return
+		return c.Status(fiber.StatusInternalServerError).JSON(fiber.Map{"error": err.Error()})
 	}
 	defer rows.Close()
 
@@ -27,21 +24,19 @@ func GetProjects(c *gin.Context) {
 		var p Project
 		err := rows.Scan(&p.ID, &p.Title, &p.Description, &p.Link)
 		if err != nil {
-			c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
-			return
+			return c.Status(fiber.StatusInternalServerError).JSON(fiber.Map{"error": err.Error()})
 		}
 		projects = append(projects, p)
 	}
 
-	c.JSON(http.StatusOK, projects)
+	return c.JSON(projects)
 }
 
-func CreateProject(c *gin.Context) {
+func CreateProject(c *fiber.Ctx) error {
 	var p Project
 
-	if err := c.ShouldBindJSON(&p); err != nil {
-		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
-		return
+	if err := c.BodyParser(&p); err != nil {
+		return c.Status(fiber.StatusBadRequest).JSON(fiber.Map{"error": err.Error()})
 	}
 
 	err := DB.QueryRow(
@@ -50,20 +45,18 @@ func CreateProject(c *gin.Context) {
 	).Scan(&p.ID)
 
 	if err != nil {
-		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
-		return
+		return c.Status(fiber.StatusInternalServerError).JSON(fiber.Map{"error": err.Error()})
 	}
 
-	c.JSON(http.StatusCreated, p)
+	return c.Status(fiber.StatusCreated).JSON(p)
 }
 
-func UpdateProject(c *gin.Context) {
-	id := c.Param("id")
+func UpdateProject(c *fiber.Ctx) error {
+	id := c.Params("id")
 	var p Project
 
-	if err := c.ShouldBindJSON(&p); err != nil {
-		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
-		return
+	if err := c.BodyParser(&p); err != nil {
+		return c.Status(fiber.StatusBadRequest).JSON(fiber.Map{"error": err.Error()})
 	}
 
 	_, err := DB.Exec(
@@ -72,22 +65,20 @@ func UpdateProject(c *gin.Context) {
 	)
 
 	if err != nil {
-		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
-		return
+		return c.Status(fiber.StatusInternalServerError).JSON(fiber.Map{"error": err.Error()})
 	}
 
-	c.JSON(http.StatusOK, gin.H{"message": "Project berhasil diupdate"})
+	return c.JSON(fiber.Map{"message": "Project berhasil diupdate"})
 }
 
-func DeleteProject(c *gin.Context) {
-	id := c.Param("id")
+func DeleteProject(c *fiber.Ctx) error {
+	id := c.Params("id")
 
 	_, err := DB.Exec("DELETE FROM projects WHERE id=$1", id)
 
 	if err != nil {
-		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
-		return
+		return c.Status(fiber.StatusInternalServerError).JSON(fiber.Map{"error": err.Error()})
 	}
 
-	c.JSON(http.StatusOK, gin.H{"message": "Project berhasil dihapus"})
+	return c.JSON(fiber.Map{"message": "Project berhasil dihapus"})
 }

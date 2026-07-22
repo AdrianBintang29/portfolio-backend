@@ -3,25 +3,25 @@ package main
 import (
 	"fmt"
 
-	"github.com/gin-gonic/gin"
+	"github.com/gofiber/fiber/v2"
 )
 
 func main() {
 	ConnectDatabase()
 
-	r := gin.Default()
+	app := fiber.New()
 
-	r.GET("/", func(c *gin.Context) {
-		c.JSON(200, gin.H{
+	app.Get("/", func(c *fiber.Ctx) error {
+		return c.JSON(fiber.Map{
 			"message": "Halo, ini server Go pertamaku!",
 		})
 	})
 
-	r.GET("/projects", GetProjects)
-	r.POST("/projects", CreateProject)
-	r.PUT("/projects/:id", UpdateProject)
-	r.DELETE("/projects/:id", DeleteProject)
+	app.Get("/projects", GetProjects)
+	app.Post("/projects", CreateProject)
+	app.Put("/projects/:id", UpdateProject)
+	app.Delete("/projects/:id", DeleteProject)
 
 	fmt.Println("Server jalan di http://localhost:8080")
-	r.Run(":8080")
+	app.Listen(":8080")
 }
