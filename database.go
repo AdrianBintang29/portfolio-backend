@@ -15,7 +15,7 @@ var DB *sql.DB
 func ConnectDatabase() {
 	err := godotenv.Load()
 	if err != nil {
-		log.Fatal("Gagal membaca file .env:", err)
+		fmt.Println("File .env tidak ditemukan, menggunakan environment variables dari sistem")
 	}
 
 	dbUser := os.Getenv("DB_USER")
