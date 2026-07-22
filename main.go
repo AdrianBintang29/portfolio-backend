@@ -18,15 +18,17 @@ func main() {
 	})
 
 	app.Get("/projects", GetProjects)
-	app.Post("/projects", CreateProject)
-	app.Put("/projects/:id", UpdateProject)
-	app.Delete("/projects/:id", DeleteProject)
+	app.Post("/projects", AuthRequired, CreateProject)
+	app.Put("/projects/:id", AuthRequired, UpdateProject)
+	app.Delete("/projects/:id", AuthRequired, DeleteProject)
 
 	app.Get("/education", GetEducation)
-	app.Post("/education", CreateEducation)
-	app.Put("/education/:id", UpdateEducation)
-	app.Delete("/education/:id", DeleteEducation)
+	app.Post("/education", AuthRequired, CreateEducation)
+	app.Put("/education/:id", AuthRequired, UpdateEducation)
+	app.Delete("/education/:id", AuthRequired, DeleteEducation)
 
+	app.Post("/register", Register)
+	app.Post("/login", Login)
 	fmt.Println("Server jalan di http://localhost:8080")
 	app.Listen(":8080")
 }
