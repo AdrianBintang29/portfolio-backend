@@ -14,7 +14,7 @@ func main() {
 	app := fiber.New()
 
 	app.Use(cors.New(cors.Config{
-		AllowOrigins: "http://localhost:3000, https://portfolio-adrian.vercel.app",
+		AllowOrigins: "http://localhost:3000, https://portfolio-adrian-adrn.vercel.app",
 		AllowHeaders: "Origin, Content-Type, Accept, Authorization",
 		AllowMethods: "GET, POST, PUT, DELETE",
 	}))
